@@ -72,6 +72,59 @@ Ensure that the Ingress Controller is running before applying the Ingress manife
 
 You can modify hostnames or paths as needed for your environment.
 
+
+
+
+
+             🔒 (Not Applied Yet) Enabling TLS Termination on Ingress
+
+              ⚠️ NOTE (IMPORTANT):
+The following section explains how to enable HTTPS/TLS for the Ingress,
+but it has NOT been applied in this setup yet.
+
+Step 1: Generate a Self-Signed Certificate
+
+   openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout tls.key -out tls.crt \
+-subj "/CN=example.com/O=example.com"
+
+Step 2: Create a Kubernetes TLS Secret
+
+
+kubectl create secret tls example-tls-secret --cert=tls.crt --key=tls.key
+
+Step 3: Update the Ingress File
+
+Add this section under spec: in your Ingress file:
+
+tls:
+  - hosts:
+    - www.example.com
+    - api.example.com
+    secretName: example-tls-secret
+
+
+Optional HTTPS redirection:
+
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+Step 4: Apply the Changes
+kubectl apply -f ingress.yaml
+
+🧠 Summary
+
+This project demonstrates:
+
+Creating Pods and Services in Kubernetes
+
+Configuring an NGINX Ingress Controller
+
+Routing traffic based on host and path
+
+(Optional) Adding TLS support for HTTPS access
+
 🎯 Project Goal
 
 This project was created for learning purposes — to understand how Ingress works in Kubernetes and how to manage routing between multiple services.
